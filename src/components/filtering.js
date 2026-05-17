@@ -6,7 +6,7 @@ const compare = createComparison(defaultRules);
 export function initFiltering(elements, indexes) {
   // @todo: #4.1 — заполнить выпадающие списки опциями
   Object.keys(indexes).forEach((elementName) => {
-   
+    
     elements[elementName].innerHTML = '';
     
     const defaultOption = document.createElement('option');
@@ -39,8 +39,19 @@ export function initFiltering(elements, indexes) {
         state[fieldName] = '';
       }
     }
+    const filterState = { ...state };
+    
+    
+    // Обработка totalFrom и totalTo как диапазона
+    if (filterState.totalFrom || filterState.totalTo) {
+      const from = filterState.totalFrom ? parseFloat(filterState.totalFrom) : -Infinity;
+      const to = filterState.totalTo ? parseFloat(filterState.totalTo) : Infinity;
+      filterState.total = [from, to];
+      delete filterState.totalFrom;
+      delete filterState.totalTo;
+    }
 
     // @todo: #4.5 — отфильтровать данные используя компаратор
-    return data.filter(row => compare(row, state));
+    return data.filter(row => compare(row, filterState));
   };
 }

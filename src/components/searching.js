@@ -3,14 +3,14 @@ import { rules, createComparison } from "../lib/compare.js";
 export function initSearching(searchField) {
   // @todo: #5.1 — настроить компаратор
   const comparison = createComparison({
-    skipEmptyTargetValues: rules.skipEmptyTargetValues
+    ['skipEmptyTargetValues']: rules.searchMultipleFields(searchField, ['date', 'customer', 'seller'], false)
   });
 
-  const searchRule = rules.searchMultipleFields(
-    searchField,
-    ['date', 'customer', 'seller'],
-    false  
-  );
+//   const searchRule = rules.searchMultipleFields(
+//     searchField,
+//     ['date', 'customer', 'seller'],
+//     false
+//   );
 
   return (data, state, action) => {
     // @todo: #5.2 — применить компаратор
