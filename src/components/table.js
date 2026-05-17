@@ -36,11 +36,6 @@ export function initTable(settings, onAction) {
     onAction();
   });
 
-  // Обработчик события input (для поля поиска)
-  root.container.addEventListener("input", () => {
-    onAction();
-  });
-
   // Обработчик события reset
   root.container.addEventListener("reset", () => {
     setTimeout(() => {
@@ -54,14 +49,6 @@ export function initTable(settings, onAction) {
     onAction(e.submitter);
   });
 
-  
-  root.container.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && e.target.tagName === "INPUT") {
-      e.preventDefault();
-      onAction();
-    }
-  });
-
   const render = (data) => {
     // @todo: #1.1 — преобразовать данные в массив строк на основе шаблона rowTemplate
     const nextRows = data.map((item) => {
@@ -70,8 +57,17 @@ export function initTable(settings, onAction) {
       Object.keys(item).forEach((key) => {
         // Проверяем, существует ли ключ в row.elements
         if (row.elements[key]) {
-          // Присваиваем значение соответствующему элементу
-          row.elements[key].textContent = item[key];
+          if (
+            row.elements[key].tagName === "INPUT" ||
+            row.elements[key].tagName === "SELECT"
+          ) {
+            // Присваиваем значение соответствующему элементу
+            row.elements[key].value = item[key];
+          } else {
+            row.elements[key].textContent = item[key];
+          }
+          
+          
         }
       });
 
