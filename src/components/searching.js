@@ -2,9 +2,9 @@ import { rules, createComparison } from "../lib/compare.js";
 
 export function initSearching(searchField) {
   // @todo: #5.1 — настроить компаратор
-  const comparison = createComparison({
-    ['skipEmptyTargetValues']: [rules.searchMultipleFields(searchField, ['date', 'customer', 'seller'], false)],
-  });
+  const comparison = createComparison(
+    ['skipEmptyTargetValues'], [rules.searchMultipleFields(searchField, ['date', 'customer', 'seller'], false)],
+  );
 
   return (data, state, action) => {
     // @todo: #5.2 — применить компаратор
@@ -13,11 +13,7 @@ export function initSearching(searchField) {
     if (!searchValue || searchValue.trim() === '') {
       return data;
     }
-    // Создаем объект с полем для поиска
-    const searchState = {
-      [searchField]: searchValue
-    };
     
-    return data.filter(item => comparison(item, searchState));
+    return data.filter(item => comparison(item, { [searchField]: searchValue }));
   };
 }
