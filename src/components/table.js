@@ -54,6 +54,14 @@ export function initTable(settings, onAction) {
     onAction(e.submitter);
   });
 
+  
+  root.container.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && e.target.tagName === "INPUT") {
+      e.preventDefault();
+      onAction();
+    }
+  });
+
   const render = (data) => {
     // @todo: #1.1 — преобразовать данные в массив строк на основе шаблона rowTemplate
     const nextRows = data.map((item) => {
