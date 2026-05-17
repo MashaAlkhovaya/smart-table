@@ -23,10 +23,8 @@ export function initSorting(columns) {
         columnStates[columnIndex] = nextState;
         
         // Обновите переменные (согласно заданию)
-        action.dataset.value = sortMap[action.dataset.value];    // Сохраним и применим как текущее следующее состояние из карты
-        field = action.dataset.field;                            // Информация о сортируемом поле есть также в кнопке
-        
-        // Для sortCollection нужно преобразовать 'up'/'down' в 'asc'/'desc'
+        action.dataset.value = sortMap[action.dataset.value];
+        field = action.dataset.field;
         order = convertOrder(action.dataset.value);
       }
 
@@ -48,6 +46,45 @@ export function initSorting(columns) {
       });
     }
 
-    return sortCollection(data, field, order);
+    // Если сортировка не активна, возвращаем исходные данные
+    if (!field || !order) {
+      return data;
+    }
+
+    // Для корректной сортировки дат и чисел создаем копию данных
+    const sortedData = [...data];
+    
+    // Своя сортировка, если sortCollection работает некорректно
+    sortedData.sort((a, b) => {
+      let aVal = a[field];
+      let bVal = b[field];
+      
+      // Специальная обработка для дат
+      if (field === 'date') {
+        aVal = new Date(aVal).getTime();
+        bVal = new Date(bVal).getTime();
+      }
+      // Для чисел
+      else if (field === 'total') {
+        aVal = parseFloat(aVal) || 0;
+        bVal = parseFloat(bVal) || 0;
+      }
+      // Для строк
+      else if (typeof aVal === 'string') {
+        aVal = aVal.toLowerCase();
+        bVal = bVal.toLowerCase();
+      }
+      
+      if (order === 'asc') {
+        return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+      } else {
+        return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+      }
+    });
+    
+    return sortedData;
+    
+    // Или используйте sortCollection, если он работает:
+    // return sortCollection(data, field, order);
   };
 }
