@@ -31,15 +31,36 @@ export function initFiltering(elements, indexes) {
     if (action && action.name === "clear") {
       const fieldName = action.dataset.field;
 
-      if (fieldName && state[fieldName]) {
+      if (fieldName && elements[fieldName]) {
         elements[fieldName].value = "";
-        if (state && state[fieldName] !== undefined) {
-          state[fieldName] = "";
-        }
+        if (state) state[fieldName] = "";
       }
     }
 
     // @todo: #4.5 — отфильтровать данные используя компаратор
-    return data.filter((row) => compare(row, state));
+    let filteredData = [...data];
+
+    // Фильтрация по select полям
+    Object.keys(elements).forEach((elementName) => {
+      const filterValue = state[elementName];
+      if (filterValue && filterValue !== "") {
+        filteredData = filteredData.filter(
+          (item) => item[elementName] === filterValue,
+        );
+      }
+    });
+
+    // Фильтрация по диапазону суммы (totalFrom, totalTo)
+    if (state.totalFrom && state.totalFrom !== "") {
+      const minTotal = parseFloat(state.totalFrom);
+      filteredData = filteredData.filter((item) => item.total >= minTotal);
+    }
+
+    if (state.totalTo && state.totalTo !== "") {
+      const maxTotal = parseFloat(state.totalTo);
+      filteredData = filteredData.filter((item) => item.total <= maxTotal);
+    }
+
+    return filteredData;
   };
 }
