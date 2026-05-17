@@ -36,6 +36,11 @@ export function initTable(settings, onAction) {
     onAction();
   });
 
+  // Обработчик события input (для поля поиска)
+  root.container.addEventListener("input", () => {
+    onAction();
+  });
+
   // Обработчик события reset
   root.container.addEventListener("reset", () => {
     setTimeout(() => {
