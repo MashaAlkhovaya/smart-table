@@ -66,8 +66,6 @@ export function initTable(settings, onAction) {
           } else {
             row.elements[key].textContent = item[key];
           }
-          
-          
         }
       });
 

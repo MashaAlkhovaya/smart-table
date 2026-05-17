@@ -13,7 +13,11 @@ export function initSearching(searchField) {
     if (!searchValue || searchValue.trim() === '') {
       return data;
     }
+    // Создаем объект с полем для поиска
+    const searchState = {
+      [searchField]: searchValue
+    };
     
-    return data.filter(item => comparison(item, { [searchField]: state[searchField] }));
+    return data.filter(item => comparison(item, searchState));
   };
 }
