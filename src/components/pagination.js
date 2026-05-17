@@ -7,6 +7,9 @@ export const initPagination = (
   // @todo: #2.3 — подготовить шаблон кнопки для страницы и очистить контейнер
   const pageTemplate = pages.firstElementChild.cloneNode(true);
   pages.innerHTML = "";
+  
+  // Сохраняем предыдущую длину данных для отслеживания изменений
+  let previousDataLength = 0;
 
   return (data, state, action) => {
     // @todo: #2.1 — посчитать количество страниц, объявить переменные и константы
@@ -14,12 +17,21 @@ export const initPagination = (
     const pageCount = Math.ceil(data.length / rowsPerPage) || 1;
     let page = state.page || 1;
 
+    // Если количество данных изменилось (фильтрация/сортировка), сбрасываем на первую страницу
+    if (previousDataLength !== data.length) {
+      previousDataLength = data.length;
+      page = 1;
+      state.page = 1; // Обновляем state
+    }
+
     // Корректируем текущую страницу, если она больше общего количества страниц
     if (page > pageCount) {
       page = pageCount;
+      state.page = pageCount; // Обновляем state
     }
     if (page < 1) {
       page = 1;
+      state.page = 1;
     }
 
     // @todo: #2.6 — обработать действия
@@ -27,15 +39,19 @@ export const initPagination = (
       switch (action.name) {
         case "prev":
           page = Math.max(1, page - 1);
+          state.page = page; // Обновляем state
           break;
         case "next":
           page = Math.min(pageCount, page + 1);
+          state.page = page; // Обновляем state
           break;
         case "first":
           page = 1;
+          state.page = 1; // Обновляем state
           break;
         case "last":
           page = pageCount;
+          state.page = pageCount; // Обновляем state
           break;
       }
     }
@@ -61,7 +77,7 @@ export const initPagination = (
     const skip = (page - 1) * rowsPerPage;
 
     // Защита от выхода за границы
-    if (skip >= data.length) {
+    if (skip >= data.length || data.length === 0) {
       return [];
     }
 

@@ -15,13 +15,16 @@ export function initSearching(searchField) {
   return (data, state, action) => {
     // @todo: #5.2 — применить компаратор
     const searchValue = state[searchField];
-
-    if (!searchValue || searchValue === "") {
+    
+    if (!searchValue || searchValue.trim() === "") {
       return data;
     }
-
-    return data.filter((item) => {
+    
+    const filteredData = data.filter((item) => {
+      // Используем searchRule
       return searchRule(item, searchValue);
     });
+    
+    return filteredData;
   };
 }

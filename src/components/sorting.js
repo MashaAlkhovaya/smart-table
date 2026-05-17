@@ -3,7 +3,6 @@ import { sortCollection, sortMap } from "../lib/sort.js";
 export function initSorting(columns) {
   const columnStates = columns.map(() => null);
   
-  // Функция преобразования для sortCollection
   const getSortOrder = (value) => {
     if (value === 'up') return 'asc';
     if (value === 'down') return 'desc';
@@ -42,6 +41,38 @@ export function initSorting(columns) {
       });
     }
 
-    return sortCollection(data, field, order);
+    // Если sortCollection не работает, используем свою сортировку
+    if (!field || !order) {
+      return data;
+    }
+    
+    // Пробуем использовать sortCollection, если она есть
+    if (typeof sortCollection === 'function') {
+      return sortCollection(data, field, order);
+    }
+    
+    // Своя сортировка
+    const sortedData = [...data];
+    sortedData.sort((a, b) => {
+      let aVal = a[field];
+      let bVal = b[field];
+      
+      if (field === 'date') {
+        aVal = new Date(aVal).getTime();
+        bVal = new Date(bVal).getTime();
+      } else if (field === 'total') {
+        aVal = parseFloat(aVal) || 0;
+        bVal = parseFloat(bVal) || 0;
+      } else if (typeof aVal === 'string') {
+        aVal = aVal.toLowerCase();
+        bVal = bVal.toLowerCase();
+      }
+      
+      return order === 'asc' 
+        ? (aVal > bVal ? 1 : aVal < bVal ? -1 : 0)
+        : (aVal < bVal ? 1 : aVal > bVal ? -1 : 0);
+    });
+    
+    return sortedData;
   };
 }
